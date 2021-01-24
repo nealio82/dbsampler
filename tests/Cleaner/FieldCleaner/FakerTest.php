@@ -24,6 +24,6 @@ class FakerTest extends TestCase
 
         $result = $cleaner->clean(['company']);
 
-        $this->assertMatchesRegularExpression("/^[a-zA-Z\ \.\,\-]+$/", $result);
+        $this->assertMatchesRegularExpression("/^[a-zA-Z\ \.\,\-\']+$/", $result);
     }
 }
