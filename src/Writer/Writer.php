@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Quidco\DbSampler\Writer;
 
 use Doctrine\DBAL\Connection;
@@ -19,6 +18,7 @@ class Writer
      */
     private $destination;
 
+    // @todo: change the Connection dependency to be a DestinationDatabase object instead
     public function __construct(\stdClass $config, Connection $destination)
     {
         $this->destination = $destination;
