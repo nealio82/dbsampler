@@ -39,7 +39,7 @@ class NewestById extends BaseSampler implements Sampler
         $this->quantity = (int)$this->demandParameterValue($this->config, 'quantity'); // TODO possibly rename to 'limit'
         $this->idField = $this->demandParameterValue($this->config, 'idField');
 
-        $query = $this->sourceConnection->createQueryBuilder()->select('*')->from($this->tableName)
+        $query = $this->source->getConnection()->createQueryBuilder()->select('*')->from($this->tableName)
             ->addOrderBy($this->idField, 'DESC')
             ->setMaxResults($this->quantity)
             ->execute();

@@ -20,4 +20,9 @@ abstract class Database
     {
         return DriverFactory::getDriver($this->connection);
     }
+
+    public function getConnection(): Connection
+    {
+        return $this->connection;
+    }
 }

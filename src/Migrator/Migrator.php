@@ -26,30 +26,28 @@ class Migrator
     private $logger;
 
     /**
-     * @var Connection
-     */
-    private $sourceConnection;
-
-    /**
-     * @var Connection
-     */
-    private $destConnection;
-
-    /**
      * @var ReferenceStore
      */
     private $referenceStore;
 
     private $customCleaners = [];
+    /**
+     * @var SourceDatabase
+     */
+    private $source;
+    /**
+     * @var DestinationDatabase
+     */
+    private $destination;
 
     public function __construct(
-        Connection $sourceConnection,
-        Connection $destConnection,
+        SourceDatabase $source,
+        DestinationDatabase $destination,
         LoggerInterface $logger
     )
     {
-        $this->sourceConnection = $sourceConnection;
-        $this->destConnection = $destConnection;
+        $this->source = $source;
+        $this->destination = $destination;
         $this->logger = $logger;
         $this->referenceStore = new ReferenceStore();
     }
@@ -61,10 +59,7 @@ class Migrator
      */
     public function execute(string $setName, TableCollection $tableCollection, ViewCollection $viewCollection): void
     {
-        $source = new SourceDatabase($this->sourceConnection);
-        $destination = new DestinationDatabase($this->destConnection);
-
-        if ($source->getDriver()->getName() !== $destination->getDriver()->getName()) {
+        if ($this->source->getDriver()->getName() !== $this->destination->getDriver()->getName()) {
             throw new \RuntimeException('Source and destination must use the same driver!');
         }
 
@@ -73,7 +68,7 @@ class Migrator
             // rather than relying on properties being present in the json / stdClass object
 
             $sampler = $this->buildTableSampler($migrationSpec, $table);
-            $writer = new Writer($migrationSpec, $destination);
+            $writer = new Writer($migrationSpec, $this->destination);
             $cleaner = new RowCleaner($migrationSpec);
 
             foreach ($this->customCleaners as $alias => $customCleaner) {
@@ -81,7 +76,7 @@ class Migrator
             }
 
             try {
-                $this->ensureEmptyTargetTable($table, $source, $destination);
+                $this->ensureEmptyTargetTable($table);
                 $rows = $sampler->execute();
 
                 foreach ($rows as $row) {
@@ -99,10 +94,10 @@ class Migrator
         }
 
         foreach ($viewCollection->getViews() as $view) {
-            $this->migrateView($view, $setName, $source, $destination);
+            $this->migrateView($view, $setName);
         }
 
-        $this->migrateTableTriggers($setName, $tableCollection, $source, $destination);
+        $this->migrateTableTriggers($setName, $tableCollection);
     }
 
     public function registerCustomCleaner(FieldCleaner $cleaner, string $alias): void
@@ -115,10 +110,10 @@ class Migrator
      *
      * @param string $table Table name
      */
-    private function ensureEmptyTargetTable(string $table, SourceDatabase $source, DestinationDatabase $destination): void
+    private function ensureEmptyTargetTable(string $table): void
     {
-        $destination->dropTable($table);
-        $destination->createTable($source->getTableDefinition($table));
+        $this->destination->dropTable($table);
+        $this->destination->createTable($this->source->getTableDefinition($table));
     }
 
     /**
@@ -130,14 +125,12 @@ class Migrator
      */
     private function migrateTableTriggers(
         string $setName,
-        TableCollection $tableCollection,
-        SourceDatabase $source,
-        DestinationDatabase $destination
+        TableCollection $tableCollection
     ): void
     {
         try {
             foreach ($tableCollection->getTables() as $table => $sampler) {
-                $destination->migrateTableTriggers($source->getTriggersDefinition($table));
+                $this->destination->migrateTableTriggers($this->source->getTriggersDefinition($table));
             }
         } catch (\Exception $e) {
             $this->logger->error(
@@ -154,13 +147,11 @@ class Migrator
      */
     protected function migrateView(
         string $view,
-        string $setName,
-        SourceDatabase $source,
-        DestinationDatabase $destination
+        string $setName
     ): void
     {
-        $destination->dropView($view);
-        $destination->createView($source->getViewDefinition($view));
+        $this->destination->dropView($view);
+        $this->destination->createView($this->source->getViewDefinition($view));
 
         $this->logger->info("$setName: migrated view '$view'");
     }
@@ -182,7 +173,7 @@ class Migrator
             $sampler = new $samplerClass(
                 $migrationSpec,
                 $this->referenceStore,
-                $this->sourceConnection,
+                $this->source,
                 $tableName
             );
         } else {

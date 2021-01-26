@@ -5,6 +5,8 @@ namespace Quidco\DbSampler\Tests;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\TestCase;
+use Quidco\DbSampler\Database\DestinationDatabase;
+use Quidco\DbSampler\Database\SourceDatabase;
 
 abstract class SqliteBasedTestCase extends TestCase
 {
@@ -13,13 +15,13 @@ abstract class SqliteBasedTestCase extends TestCase
      */
     protected $fixturesDir;
     /**
-     * @var Connection
+     * @var DestinationDatabase
      */
-    protected $destConnection;
+    protected $destination;
     /**
-     * @var Connection
+     * @var SourceDatabase
      */
-    protected $sourceConnection;
+    protected $source;
 
     /**
      * Create config file and connections
@@ -63,7 +65,7 @@ abstract class SqliteBasedTestCase extends TestCase
 
         foreach ($sql as $command) {
             if (trim($command)) {
-                $this->sourceConnection->exec($command);
+                $this->source->getConnection()->exec($command);
             }
         }
     }
@@ -75,18 +77,18 @@ abstract class SqliteBasedTestCase extends TestCase
      */
     protected function setupDbConnections()
     {
-        $this->sourceConnection = DriverManager::getConnection(
+        $this->source = new SourceDatabase(DriverManager::getConnection(
             [
                 'driver' => 'pdo_sqlite',
                 'path' => $this->fixturesDir . '/sqlite-dbs/small-source.sqlite',
             ]
-        );
+        ));
 
-        $this->destConnection = DriverManager::getConnection(
+        $this->destination = new DestinationDatabase(DriverManager::getConnection(
             [
                 'driver' => 'pdo_sqlite',
                 'path' => $this->fixturesDir . '/sqlite-dbs/small-dest.sqlite',
             ]
-        );
+        ));
     }
 }

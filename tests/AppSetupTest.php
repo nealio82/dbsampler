@@ -29,10 +29,10 @@ class AppSetupTest extends SqliteBasedTestCase
         $app->performMigrationSet('small-sqlite-test');
 
         // Test copies over only apples, pears, and the baskets containing them
-        $this->assertSame('2', $this->destConnection->query('SELECT COUNT(*) FROM fruits')->fetchColumn());
-        $this->assertSame('2', $this->destConnection->query('SELECT COUNT(*) FROM fruit_x_basket')->fetchColumn());
-        $this->assertSame('3', $this->sourceConnection->query('SELECT COUNT(*) FROM baskets')->fetchColumn());
-        $this->assertSame('2', $this->destConnection->query('SELECT COUNT(*) FROM baskets')->fetchColumn());
+        $this->assertSame('2', $this->destination->getConnection()->query('SELECT COUNT(*) FROM fruits')->fetchColumn());
+        $this->assertSame('2', $this->destination->getConnection()->query('SELECT COUNT(*) FROM fruit_x_basket')->fetchColumn());
+        $this->assertSame('3', $this->source->getConnection()->query('SELECT COUNT(*) FROM baskets')->fetchColumn());
+        $this->assertSame('2', $this->destination->getConnection()->query('SELECT COUNT(*) FROM baskets')->fetchColumn());
     }
 
     /**

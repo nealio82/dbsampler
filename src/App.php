@@ -11,6 +11,8 @@ use Psr\Log\NullLogger;
 use Quidco\DbSampler\Collection\TableCollection;
 use Quidco\DbSampler\Collection\ViewCollection;
 use Quidco\DbSampler\Configuration\MigrationConfigurationCollection;
+use Quidco\DbSampler\Database\DestinationDatabase;
+use Quidco\DbSampler\Database\SourceDatabase;
 use Quidco\DbSampler\Migrator\Migrator;
 
 /**
@@ -75,7 +77,11 @@ class App extends Container implements DatabaseConnectionFactoryInterface, Logge
         $sourceConnection = $this->createSourceConnectionByDbName($configuration->getSourceDbName());
         $destConnection = $this->createDestConnectionByDbName($configuration->getDestinationDbName());
 
-        $migrator = new Migrator($sourceConnection, $destConnection, $this->getLogger());
+        $migrator = new Migrator(
+            new SourceDatabase($sourceConnection),
+            new DestinationDatabase($destConnection),
+            $this->getLogger()
+        );
 
         $tableCollection = TableCollection::fromConfig($configuration);
         $viewCollection = ViewCollection::fromConfig($configuration);

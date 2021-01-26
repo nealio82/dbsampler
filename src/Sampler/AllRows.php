@@ -13,7 +13,7 @@ class AllRows extends BaseSampler implements Sampler
 
     public function getRows(): array
     {
-        $query = $this->sourceConnection->createQueryBuilder()->select('*')->from($this->tableName);
+        $query = $this->source->getConnection()->createQueryBuilder()->select('*')->from($this->tableName);
 
         if ($this->limit) {
             $query->setMaxResults($this->limit);

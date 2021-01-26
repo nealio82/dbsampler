@@ -3,6 +3,7 @@
 namespace Quidco\DbSampler;
 
 use Doctrine\DBAL\Connection;
+use Quidco\DbSampler\Database\SourceDatabase;
 
 /**
  * Abstract BaseSampler class with some common functionality.
@@ -21,9 +22,9 @@ abstract class BaseSampler
     /**
      * Connection to Source DB
      *
-     * @var Connection
+     * @var SourceDatabase
      */
-    protected $sourceConnection;
+    protected $source;
 
     /**
      * @var ReferenceStore
@@ -51,7 +52,7 @@ abstract class BaseSampler
     public function __construct(
         \stdClass $config,
         ReferenceStore $referenceStore,
-        Connection $sourceConnection,
+        SourceDatabase $source,
         string $tableName
     ) {
         $this->config = $config;
@@ -59,7 +60,7 @@ abstract class BaseSampler
 
         $this->referenceFields = isset($config->remember) ? $config->remember : [];
         $this->limit = isset($config->limit) ? (int)$config->limit : false;
-        $this->sourceConnection = $sourceConnection;
+        $this->source = $source;
         $this->tableName = $tableName;
     }
 

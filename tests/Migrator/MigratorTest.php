@@ -33,7 +33,7 @@ class MigratorTest extends SqliteBasedTestCase
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Unrecognised sampler type \'invalidsampler\' required');
-        $migrator = new Migrator($this->sourceConnection, $this->destConnection, $logger);
+        $migrator = new Migrator($this->source, $this->destination, $logger);
         $migrator->execute('test-migration', $tableCollection, $viewCollection);
     }
 }

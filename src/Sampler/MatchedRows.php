@@ -62,7 +62,7 @@ class MatchedRows extends BaseSampler implements Sampler
             $this->constraints = (array)$this->demandParameterValue($this->config, 'constraints');
         }
 
-        $queryBuilder = $this->sourceConnection->createQueryBuilder()->select('*')->from($this->tableName);
+        $queryBuilder = $this->source->getConnection()->createQueryBuilder()->select('*')->from($this->tableName);
         $queryBuilder->where('1');
 
         foreach ($this->constraints as $field => $value) {
@@ -79,7 +79,7 @@ class MatchedRows extends BaseSampler implements Sampler
                 if (count($value)) {
                     $questionMarks = implode(', ', array_pad([], count($value), '?'));
                     $queryBuilder->andWhere(
-                        $this->sourceConnection->quoteIdentifier($field) . ' IN (' . $questionMarks . ')'
+                        $this->source->getConnection()->quoteIdentifier($field) . ' IN (' . $questionMarks . ')'
                     );
 
                     foreach ((array)$value as $alternate) { // (array) required to keep static analysis from screaming
@@ -89,7 +89,7 @@ class MatchedRows extends BaseSampler implements Sampler
                     $queryBuilder->andWhere('0');
                 }
             } else {
-                $queryBuilder->andWhere($this->sourceConnection->quoteIdentifier($field) . ' = ?');
+                $queryBuilder->andWhere($this->source->getConnection()->quoteIdentifier($field) . ' = ?');
                 $queryBuilder->createPositionalParameter($value);
             }
         }
