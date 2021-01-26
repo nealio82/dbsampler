@@ -73,7 +73,7 @@ class Migrator
             // rather than relying on properties being present in the json / stdClass object
 
             $sampler = $this->buildTableSampler($migrationSpec, $table);
-            $writer = new Writer($migrationSpec, $this->destConnection);
+            $writer = new Writer($migrationSpec, $destination);
             $cleaner = new RowCleaner($migrationSpec);
 
             foreach ($this->customCleaners as $alias => $customCleaner) {

@@ -34,4 +34,24 @@ class DestinationDatabase extends Database
     {
         $this->connection->exec($viewDefinition);
     }
+
+    public function insert(string $tableName, array $row): void
+    {
+        $this->connection->insert($tableName, $this->sanitiseRowKeys($row));
+    }
+
+    public function query(string $sql): void
+    {
+        $this->connection->exec($sql);
+    }
+
+    private function sanitiseRowKeys(array $row): array
+    {
+        foreach (array_keys($row) as $key) {
+            $row[$this->connection->quoteIdentifier($key)] = $row[$key];
+            unset($row[$key]);
+        }
+
+        return $row;
+    }
 }
