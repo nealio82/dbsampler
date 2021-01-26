@@ -44,8 +44,8 @@ class Migrator
         SourceDatabase $source,
         DestinationDatabase $destination,
         LoggerInterface $logger
-    )
-    {
+    ) {
+    
         $this->source = $source;
         $this->destination = $destination;
         $this->logger = $logger;
@@ -126,8 +126,8 @@ class Migrator
     private function migrateTableTriggers(
         string $setName,
         TableCollection $tableCollection
-    ): void
-    {
+    ): void {
+    
         try {
             foreach ($tableCollection->getTables() as $table => $sampler) {
                 $this->destination->migrateTableTriggers($this->source->getTriggersDefinition($table));
@@ -148,8 +148,8 @@ class Migrator
     protected function migrateView(
         string $view,
         string $setName
-    ): void
-    {
+    ): void {
+    
         $this->destination->dropView($view);
         $this->destination->createView($this->source->getViewDefinition($view));
 
