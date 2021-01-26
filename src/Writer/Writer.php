@@ -4,6 +4,7 @@ namespace Quidco\DbSampler\Writer;
 
 use Quidco\DbSampler\Database\DestinationDatabase;
 
+// @todo: add tests for this class
 class Writer
 {
     /**

@@ -2,6 +2,7 @@
 
 namespace Quidco\DbSampler\Database;
 
+// @todo: add tests for this class
 class DestinationDatabase extends Database
 {
     public function dropTable(string $tableName): void
@@ -45,6 +46,7 @@ class DestinationDatabase extends Database
         $this->connection->exec($sql);
     }
 
+    // @todo: add tests for this
     private function sanitiseRowKeys(array $row): array
     {
         foreach (array_keys($row) as $key) {

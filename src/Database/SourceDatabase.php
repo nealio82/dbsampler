@@ -2,6 +2,7 @@
 
 namespace Quidco\DbSampler\Database;
 
+// @todo: add tests for this class
 class SourceDatabase extends Database
 {
     public function getTableDefinition(string $tableName): string

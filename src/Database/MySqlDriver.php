@@ -2,6 +2,7 @@
 
 namespace Quidco\DbSampler\Database;
 
+// @todo: add tests for this class
 class MySqlDriver extends Driver
 {
     public function getName(): string

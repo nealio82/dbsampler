@@ -59,6 +59,7 @@ class Migrator
      */
     public function execute(string $setName, TableCollection $tableCollection, ViewCollection $viewCollection): void
     {
+        // @todo: add tests for this condition
         if ($this->source->getDriver()->getName() !== $this->destination->getDriver()->getName()) {
             throw new \RuntimeException('Source and destination must use the same driver!');
         }
